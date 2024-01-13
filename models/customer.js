@@ -83,6 +83,22 @@ class Customer {
     return `${this.firstName} ${this.lastName}`;
   }
   
+  static async getSearchedCustomers(input) {
+    console.log("Search input:", input);
+    const results = await db.query(
+      `SELECT 
+         id, 
+         first_name AS "firstName", 
+         last_name AS "lastName", 
+         phone, 
+         notes
+         FROM customers
+         WHERE lower(first_name) LIKE lower($1) OR lower(last_name) LIKE lower($1)`,
+      [`%${input}%`]
+    );
+    console.log("Query results:", results.rows);
+    return results.rows.map(c => new Customer(c));
+  }
 
 }
 
